@@ -1,89 +1,423 @@
 <!DOCTYPE html>
 <html>
+    <body style="background-color:DarkRed;">
+    <form action="{{page}}" method="POST">
+        <label for="ISBN13_number">ISBN-13 Number</label>
+        <br>
+        <input id="ISBN13_number" name ="ISBN13_number" value="" type="number">
+        <br>
+        <label for="name">Name</label>
+        <br>
+        <input id="name" name="name" value="" type="text">
+        <br>
+        <label for="author">Author</label>
+        <br>
+        <input id="author" name="author" value="" type="text">
+        <br>
+        <label for="publication_date">Publication Date</label>
+        <br>
+        <input id="publication_date" name="publication_date" value="" type="date">
+        <br>
+        <label for="cover">Book Cover</label>
+        <br>
+        <input id="cover" name="cover" value="" type="text">
+        <br>
+        <label for="book_description">Book Description</label>
+        <br>
+        <input id="book_description" name="book_description" value="" type="text">
+        <br>
+        <label for="trade_price">Trade Price</label>
+        <br>
+        <input id="trade_price" name="trade_price" value="" type="range" min="1" max="100" class="slider" oninput="this.nextElementSibling.value = this.value">
+        <output>50</output>
+        <br>
+        <label for="retail_price">Retail Price</label>
+        <br>
+        <input id="retail_price" name="retail_price" value="" type="range" min="1" max="100" class="slider" oninput="this.nextElementSibling.value = this.value">
+        <output>50</output>
+        <br>
+        <label for="quantity">Quantity</label>
+        <br>
+        <input id="quantity" name="quantity" value="" type="range" min="0" max="20" class="slider" oninput="this.nextElementSibling.value = this.value">
+        <output>10</output>
+        <br>
+        <input value="Submit" type="submit"> 
+        <br>
+    </form>
+   <a href="/adminhomepage"><button>Return to Homepage</button></a>
+  </body>
+</html>
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <h1>Complete Order</h1>
+    </head>
+    <body style="background-color:DarkRed;">
+        <table class="tbl-cart" cellpadding="10" cellspacing="1">
+          <tbody>
+              <tr>
+                  <th>Name</th>
+                  <th>Cover</th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Remove</th>
+              </tr>
+        {% for key, value in session['cart_item'].items() %}
+                {% set quantity = session['cart_item'][key]['quantity'] %}
+                {% set total_price = session['cart_item'][key]['total_price'] %}
+                {% set item_price=session['cart_item'][key]['retail_price'] %}
+                <tr>
+                    <td>{{session['cart_item'][key]['name']}}</td>
+                    <td><img src="/static/images/book_covers/{{session['cart_item'][key]['cover']}}"></td>
+                    <td>{{quantity}}</td>
+                    <td>£{{total_price}}</td>
+                    <td>
+                      <a  href="{{ url_for('delete_book', ISBN13_number=session['cart_item'][key]['ISBN13_number'])}}" class="btnRemoveAction">
+                        <img src="static/images/book_covers/bin.jfif" alt="Remove Item" width="30" height="30"/>
+                      </a>
+                    </td>
+                </tr>
+        {% endfor %}
+        <br>
+                <tr>
+                    <td>Total</td>
+                    <td>{{ session['all_total_quantity'] }}</td>
+                    <td><strong>£{{ session['all_total_price'] }}</strong></td>
+                    <a href="/pay_now"> 
+                       <button>
+                         Pay Now
+                       </button>
+                    </a>
+                    <td></td>
+                </tr>
+    </body>
+</html>
+
+<!DOCTYPE html>
+<html>
+    <a href="/login"> 
+        <button>
+            Logout
+        </button>
+    </a>
 <head>
-	<title>Python Flask Simple Shopping Cart</title>
-	<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css" />
+    <title>Vic's Bookshop</title>
 </head>
 <body>
-	<div>
-		{% with messages = get_flashed_messages() %}
-		  {% if messages %}
-			<ul class=flashes>
-			{% for message in messages %}
-			  <li>{{ message }}</li>
-			{% endfor %}
-			</ul>
-		  {% endif %}
-		{% endwith %}
-	</div>
+    <div>
+      {% with messages = get_flashed_messages() %}
+         {% if messages %}
+         <ul class=flashes>
+         {% for message in messages %}
+             <li>{{message</li>
+         {% endfor %}
+        </ul>
+        {% endif %}
+      {% endwith %}
+    </div>
+    <div id="shopping-cart">
+        <div class="txt-heading">
+            Shopping Cart
+        </div>
+        {% if 'cart_item' in session %}
+          <a id="btnEmpty" href="{{url_for('/empty_cart')}}">Empty Cart</a>
+          <table class="tbl-cart" cellpadding="10" cellspacing="1">
+          <tbody>
+              <tr>
+                  <th>ISBN-13 Number</th>
+                  <th>Name</th>
+                  <th>Quantity</th>
+                  <th>Unknown Price</th>
+                  <th>Retail Price</th>
+                  <th>Remove</th>
+              </tr>
+              {% for key, val in session['cart_item'].items() %}
+                {% set quantity = session['cart_item'][key]['quantity'] %}
+                {% set subtotal = session['cart_item'][key]['retail_price'] %}
+                {% set item_price=session['cart_item'][key]['total_price'] %}
+                <tr>
+<!--                     <td><img src="/static/images/book_covers/{{session['cart_item'][key]['image']}}</td> -->
+                    <td>{{session['cart_item'][key]['ISBN13_number']}}</td>
+                    <td>{{quantity}}</td>
+                    <td>£{{retail_price}}</td>
+                    <td>£{{item_price}}</td>
+                    <td>
+                     <a hef="{{ url_for('.delete_book', ISBN13_number=session['cart_item'][key]['ISBN13_number'])}}" class="btnRemoveAction"></a>
+                    </td>
+                </tr>
+              {% endfor %}
+              <tr>
+                  <td>Total</td>
+                  <td>{{ session['all_total_quantity'] }}</td>
+                  <td><strong>£ {{session['all_total/_price'] }}</strong></td>
+                  <td></td>
+              </tr>
+          </tbody>
+          </table>
+        {% else: %}
+          <div class="no-records">
+              Your Cart is Empty
+        </div>
+       {% endif %}
+    </div>
+    <div id="product-grid">
+        <div class="txt-heading">
+            Books
+        </div>
+        {% for rows in rows %}
+          <div class="book">
+              <form method="post" action="/add_to_cart">
+                 <div class="cover"><img src='static/images/book_covers/{{row['cover']}}' width="100" height="100"></div>
+                   <div class="book-title">{{row['name']}}</div>
+                   <div class="cart-action">
+                      <input type="hidden" name="ISBN13_number" value="{{book.ISBN13_number}}"/>
+                      <input type="text" class="book-quantity" name="quantity" value="1" size="2" />
+                      <input type="submit" value="Add to Cart" class="btnAddAction" />
+                   </div>   
+              </form>
+          </div>
+        {% endfor %}
+    </div>
+</body>
+</html>                                                                                     
 
-	<div id="shopping-cart">
-		<div class="txt-heading">Shopping Cart</div>		
-		{% if 'cart_item' in session %}
-			<a id="btnEmpty" href="{{ url_for('.empty_cart') }}">Empty Cart</a>
-			<table class="tbl-cart" cellpadding="10" cellspacing="1">
-			<tbody>
-				<tr>
-					<th style="text-align:left;">Name</th>
-					<th style="text-align:left;">Code</th>
-					<th style="text-align:right;" width="5%">Quantity</th>
-					<th style="text-align:right;" width="10%">Unit Price</th>
-					<th style="text-align:right;" width="10%">Price</th>
-					<th style="text-align:center;" width="5%">Remove</th>
-				</tr>
-				{% for key, val in session['cart_item'].items() %}
-					{% set quantity = session['cart_item'][key]['quantity'] %}
-					{% set price = session['cart_item'][key]['price'] %}
-					{% set item_price = session['cart_item'][key]['total_price'] %}					
-					<tr>
-						<td><img src="/static/images/{{ session['cart_item'][key]['image'] }}" class="cart-item-image" />{{ session['cart_item'][key]['name'] }}</td>
-						<td>{{ session['cart_item'][key]['code'] }}</td>
-						<td style="text-align:right;">{{ quantity }}</td>
-						<td  style="text-align:right;">&#8356; {{ price }}</td>
-						<td  style="text-align:right;">&#8356; {{ item_price }}</td>
-						<td style="text-align:center;">
-							<a href="{{ url_for('.delete_product', code=session['cart_item'][key]['code']) }}" class="btnRemoveAction">
-								<img src="/static/images/icon-delete.png" alt="Remove Item" />
-							</a>
-						</td>
-					</tr>
-				{% endfor %}
-				<tr>
-					<td colspan="2" align="right">Total:</td>
-					<td align="right">{{ session['all_total_quantity'] }}</td>
-					<td align="right" colspan="2"><strong>&#8356; {{ session['all_total_price'] }}</strong></td>
-					<td></td>
-				</tr>
-			</tbody>
-			</table>
-		{% else: %}
-			<div class="no-records">Your Cart is Empty</div>
-		{% endif %}
-	</div>
+<!DOCTYPE html>
+<html>
+    <a href="/login"> 
+        <button>
+            Logout
+        </button>
+    </a>
+    {% if session['username'] == "admin" %}
+    <a href="/stock_levels"> 
+        <button>
+            Stock Levels
+        </button>
+    </a>
+    {% endif %}
+<head>
+    <title>Vic's Bookshop</title>
+</head>
+<body style="background-color:DarkRed;">
+    <div>
+      {% with messages = get_flashed_messages() %}
+         {% if messages %}
+         <ul class=flashes>
+         {% for message in messages %}
+             <li>{{message}}</li>
+         {% endfor %}
+         </ul>
+        {% endif %}
+      {% endwith %}
+    </div>
+    <div id="shopping-cart">
+        <div style="font-size:2vw" class="txt-heading">
+            Shopping Cart
+        </div>
+        {% if 'cart_item' in session %}
+          <a id="btnEmpty" href="{{url_for('empty_cart')}}">Empty Cart</a>
+          <table class="tbl-cart" cellpadding="10" cellspacing="1">
+          <tbody>
+              <tr>
+                  <th>Name</th>
+                  <th>Cover</th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Remove</th>
+              </tr>
+              {% for key, value in session['cart_item'].items() %}
+                {% set quantity = session['cart_item'][key]['quantity'] %}
+                {% set total_price = session['cart_item'][key]['total_price'] %}
+                {% set item_price=session['cart_item'][key]['retail_price'] %}
+                <tr>
+                    <td>{{session['cart_item'][key]['name']}}</td>
+                    <td><img src="/static/images/book_covers/{{session['cart_item'][key]['cover']}}" idth="30" height="30"></td>
+                    <td>{{quantity}}</td>
+                    <td>£{{total_price}}</td>
+                    <td>
+                      <a  href="{{ url_for('delete_book', ISBN13_number=session['cart_item'][key]['ISBN13_number'])}}" class="btnRemoveAction">
+                        <img src="static/images/book_covers/bin.jfif" alt="Remove Item" width="30" height="30"/>
+                      </a>
+                    </td>
+                </tr>
+              {% endfor %}
+              <br>
+              <tr>
+                <td>Total</td>
+                <td>{{ session['all_total_quantity'] }}</td>
+                <td><strong>£{{ session['all_total_price'] }}</strong></td>
+                <a href="/checkout"> 
+                         <button>
+                             Checkout
+                         </button>
+                </a>
+                <td></td>
+              </tr>
+          </tbody>
+          </table>
+        {% else: %}
+          <div class="no-records">
+              Your Cart is Empty
+          </div>
+       {% endif %}
+    </div>
+    <div id="book-grid">
+        <div style="font-size: 2vw" class="txt-heading">Books</div>
+        {% for row in rows %}
+          <div class="row-item">
+              <form method="post" action="add_to_cart">
+                 <div class="cover"><img src='static/images/book_covers/{{row['cover']}}' width="100" height="100"></div>
+                 <div class="row-tile-footer">
+                   <div class="row-title">{{ row.name }}</div> 
+                   <div class="row-retail_price">£ {{ row.retail_price }}</div>
+                   <div class="cart-action">
+                      <input type="hidden" name="ISBN13_number" value="{{ row.ISBN13_number }}"/>
+                      <input type="number" class="book-quantity" name="quantity" value="1" size="2" />
+                      <input type="submit" value="Add to Cart" class="btnAddAction"/>
+                   </div> 
+                 </div>
+              </form>
+          </div>
+        {% endfor %}
+    </div>
+</body>
+</html>                                                                                     
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login</title>
+</head>
+<div style="text-align: center">
+  <body style="background-color:DarkRed;">
+    <H1>Login</H1>
+    
+    <P style="font-size:2vw">Please enter your username and password:</P>
+    <form action="{{page}}" method="post">
+      <label for="uname">Username:</label><br>
+      <input type="text" id="uname" name="uname" value=""><br>
+      <label for="pwd">Password:</label><br>
+      <input type="password" id="pwd" name="pwd" value=""><br><br>
+      <input type="submit" value="Submit">
+    </form>     
+  </body>
+  <a href="/register"> 
+        <button>
+            Don't have an account?
+        </button>
+    </a>
+ </div>
+</html>
 
-	<div id="product-grid">
-		<div class="txt-heading">Products</div>
 
-		{% for product in products %}
-        
+<!DOCTYPE html>
+<html>
+<body style="background-color:DarkRed;">
+    <H1>Pay Below</H1>
+    <P>Please enter your card details below:</P>
+    <form action="{{page}}" method="post">
+      <label for="card holder name">Card Holder Name:</label><br>
+      <input type="text" id="card_holder_name" name="card_holder_name" value=""><br>
+      <label for="card number">Card Number:</label><br>
+      <input type="number" id="cardnumber" name="cardnumber" value=""><br><br>
+      <label for="cvv">CVV:</label><br>
+      <input type="number" id="cvv" name="cvv" value=""><br><br>
+      <label for="expiry_date">Expiry Date:</label><br>
+      <input type="date" id="expiry_date" name="expiry_date" value=""><br><br>
+    </form> 
+    <a href="/purchasedhomepage">
+        <button>
+            Pay
+        </button>
+    </a>
+</body>
+</html>
 
-			<div class="product-item">
-				<form method="post" action="/add">
-					<div class="product-image"><img src="/static/images/{{ product[3] }}"></div>
-					<div class="product-tile-footer">
-						<div class="product-title">{{ product[1] }}</div>
-						<div class="product-price">&#8356; {{ product[4] }}</div>
-						<div class="cart-action">
-							<input type="hidden" name="code" value="{{ product[2] }}"/>
-							<input type="text" class="product-quantity" name="quantity" value="1" size="2" />
-							<input type="submit" value="Add to Cart" class="btnAddAction" />
-						</div>
-					</div>
-				</form>
-			</div>
 
-		{% endfor %}
-	
-	</div>
+<!DOCTYPE html>
+<html>
+    <body style="background-color:DarkRed;">
+    <h1>Thank You for Your Purchase</h1>
+        <a href="/homepage"> 
+            <button>
+            Return to Homepage
+            </button>
+        </a>
+    </body>
+</html>
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Vic's Books </title>
+    </head>
+ <div style="text-align: center">
+  <body style="background-color:DarkRed;">
+    <p1 style="font-size: 2.5vw">Please Enter Registration Details Below:<br></p1>
+    <form action="{{page}}" method = "post">
+        <label for="uname">Username:</label>
+        <br>
+        <input id="uname" name="uname" value type="text">
+        <br>
+        <label for="pwd">Password:</label>
+        <br>
+        <input id="pwd" name="pwd" value type="password">
+        <br>
+        <input value="Submit" type="submit">
+        <br>
+    </form>
+  </body>
+ </div>
+</html>
+
+<!DOCTYPE html>
+<html>
+    <a href="/add_books"> 
+        <button>w
+            Add Stock
+        </button>
+    </a>
+    <a href="/homepage"> 
+            <button>
+            Return to Homepage
+            </button>
+    </a>
+    <body style="background-color:DarkRed;">
+     <table border=1>
+      <thead>
+       <td>ISBN-13 Number</td>
+       <td>Name</td>
+       <td>Author</td>
+       <td>Publication Date</td>
+       <td>Book Cover</td>
+       <td>Book Description</td>
+       <td>Trade Price</td>
+       <td>Retail Price</td>
+       <td>Quantity</td>
+      </thead>
+      {% for row in rows %}
+       <tr>
+        <td>{{row["ISBN13_number"]}}</td>
+        <td>{{row['name']}}</td>
+        <td>{{row['author']}}</td>
+        <td>{{row['publication_date']}}</td>
+        <td><img src='static/images/book_covers/{{row['cover']}}'width="100" height="150"></td>
+        <td>{{row['book_description']}}</td> 
+        <td>£{{row['retail_price']}}</td>
+        <td>{{row['quantity']}}</td>
+       </tr>
+      {% endfor %}
+     </table>
+    </body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Error</title>
+</head>
+<body style="background-color:DarkRed;">
+    <H1>Error!</H1>
+    <P> Hi, sorry, details not recognised! </P>
 </body>
 </html>
